@@ -1,0 +1,40 @@
+name: Windows Virtual PC
+
+on:
+  workflow_dispatch:  # Rodar manualmente
+  push:
+    branches: [ main ]
+
+jobs:
+  windows-pc:
+    runs-on: windows-latest  # Isso já é um Windows Server virtual limpo da Microsoft
+    
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar ambiente Windows
+        shell: powershell
+        run: |
+          Write-Host "🌀 Windows Virtual PC ONLINE - Nyx Mode"
+          whoami
+          systeminfo | findstr /B /C:"OS Name" /C:"OS Version"
+          
+          # Instalar programas básicos (exemplo)
+          choco install -y git nodejs vscode --no-progress
+          
+          # Criar pastas e arquivos de exemplo
+          New-Item -Path "C:\VirtualPC" -ItemType Directory -Force
+          "Bem-vindo ao PC Virtual Nyx" | Out-File "C:\VirtualPC\README.txt"
+
+      - name: Rodar comandos como se fosse seu PC
+        shell: powershell
+        run: |
+          Get-ComputerInfo | Select WindowsProductName, WindowsVersion
+          echo "Tudo pronto pro que você quiser fazer aqui dentro."
+
+      - name: Upload artifacts (salvar arquivos gerados)
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-pc-files
+          path: C:\VirtualPC\
